@@ -11,4 +11,9 @@ class baseController extends Controller
     {
         return view('home')->with('name', '')->with('class', '');
     }
+
+    public function inventaire()
+    {
+        return view('inventaire');
+    }
 }
