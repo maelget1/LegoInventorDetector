@@ -9,7 +9,7 @@ class baseController extends Controller
     //
     public function home()
     {
-        return view('home')->with('name', '')->with('class', '');
+        return view('home')->with('name', '')->with('class', '')->with('val', '');
     }
 
     public function inventaire()

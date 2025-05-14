@@ -69,7 +69,7 @@
                                         <span class="text-[#0A2472] font-bold">#</span>
                                     </div>
                                     <div class="ml-4 flex-grow">
-                                        <p class="text-lg font-medium text-gray-900 dark:text-gray-100">description</p>
+                                        <p class="text-lg font-medium text-gray-900 dark:text-gray-100">{{var_dump($val)}}</p>
                                     </div>
                                     <div class="flex items-center gap-x-4">
                                         <button><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-minus-icon lucide-minus"><path d="M5 12h14"/></svg></button>
