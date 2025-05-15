@@ -9,3 +9,5 @@ Route::get('/', [baseController::class, 'home'])->name('home');
 Route::post('submit', [scanController::class, 'submit'])->name('submit');
 
 Route::get('inventaire', [baseController::class, 'inventaire'])->name('inventaire');
+
+Route::post('/update-piece-count', [baseController::class, 'updatePieceCount'])->name('update-piece-count');

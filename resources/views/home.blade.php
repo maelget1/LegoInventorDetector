@@ -6,11 +6,11 @@
                     <div class="mb-4 flex justify-between">
                         <div class="flex flex-col">
                             <label for="name" class="mb-2 font-medium text-[#0A2472]">Nom de l'élève</label>
-                            <input type="input" name="name" id="name" class="w-[350px] h-[50px] bg-[#F2F2F7] rounded-[20px]" >
+                            <input type="input" name="name" id="name" class="w-[350px] h-[50px] bg-[#F2F2F7] rounded-[20px] indent-4" >
                         </div>
                         <div class="flex flex-col">
                             <label for="name" class="mb-2 font-medium text-[#0A2472]">Classe</label>
-                            <input type="input" name="class" id="class" class="w-[350px] h-[50px] bg-[#F2F2F7] rounded-[20px]" >
+                            <input type="input" name="class" id="class" class="w-[350px] h-[50px] bg-[#F2F2F7] rounded-[20px] indent-4" >
                         </div>
                     </div>
                     <div class="mb-4">
@@ -36,32 +36,44 @@
                     <ul class="divide-y divide-gray-200">
                         
                         <div class="flex flex-col">
+                            @if(is_array($val))
                                 <h3 class="text-xl font-bold text-[#0A2472] mb-6">{{$name}} - {{$class}}</h3>
+                                @foreach($val['results'] as $item)
                                 <li class="flex items-center p-4 hover:bg-gray-50 border-b border-[#C7C7CC] transition-colors duration-150 ease-in-out mb-2">
                                     <div class="flex items-center justify-center">
-                                        <span class="text-[#0A2472] font-bold">#</span>
+                                        <span class="text-[#0A2472] text-lg font-bold">{{$item['label']}}</span>
                                     </div>
                                     <div class="ml-4 flex-grow">
-                                        <p class="text-lg font-medium text-gray-900 dark:text-gray-100">{{var_dump($val)}}</p>
+                                        <p class="font-medium text-[#0A2472] text-gray-900 dark:text-gray-100">{{$desc[$item['label']]}}</p>
                                     </div>
                                     <div class="flex items-center gap-x-4">
-                                        <button><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-minus-icon lucide-minus"><path d="M5 12h14"/></svg></button>
-                                        <button><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-plus-icon lucide-plus"><path d="M5 12h14"/><path d="M12 5v14"/></svg></button>
+                                        <button class="text-[#0A2472] minus-btn" id="{{$item['label']}}"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-minus-icon lucide-minus"><path d="M5 12h14"/></svg></button>
+                                        <p class="text-[#0A2472] font-bold" id="content-{{$item['label']}}">{{print(array_search($item['label'],$num))}}</p>
+                                        <button class="text-[#0A2472] plus-btn" id="{{$item['label']}}"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-plus-icon lucide-plus"><path d="M5 12h14"/><path d="M12 5v14"/></svg></button>
                                     </div>
                                 </li>
+                                @endforeach
                                 <div id="newContainer">
                                 </div>
                                 <button type="button" class="text-white bg-[#0E6BA8] font-medium rounded-full text-sm p-2.5 text-center ml-auto" id="addButton">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-plus-icon lucide-plus"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
                                 </button>
+                            @else
+                                <h3 class="flex justify-center text-xl font-bold text-[#8E8E93] mb-6">Aucune pièce scannées</h3>
+                                <label class=" flex justify-center text-[#8E8E93]">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-frown-icon lucide-frown"><circle cx="12" cy="12" r="10"/><path d="M16 16s-1.5-2-4-2-4 2-4 2"/><line x1="9" x2="9.01" y1="9" y2="9"/><line x1="15" x2="15.01" y1="9" y2="9"/></svg>
+                                </label>
+                            @endif
                         </div>
                         
                     </ul>
                 </div>
             </div>
+            @if(is_array($val))
             <button class="flex justify-center items-center rounded-[10px] w-[200px] h-[40px] text-white font-semibold bg-[#0E6BA8]">
                 Inventorier
             </button>
+            @endif
             <div class="mt-[30px]">
                 <p class="text-[#0A2472]">Maël Gétain - TPI</p>
             </div>
@@ -91,6 +103,36 @@
             input.focus();
             input.select();
         });
-                
+        
+
+        document.querySelectorAll('.plus-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                updatePieceCount(this.id, 1);
+            });
+        });
+
+        document.querySelectorAll('.minus-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                updatePieceCount(this.id, -1);
+            });
+        });
+        /*csrf token is not same as cookie*/
+        function updatePieceCount(label, delta) {
+            fetch('/update-piece-count', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({ label: label, delta: delta })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if(data.success) {
+                    document.getElementById('content-' + label).textContent = data.count;
+                }
+            });
+        }
+
     </script>
 </html>
