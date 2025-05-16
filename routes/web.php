@@ -13,3 +13,7 @@ Route::get('inventaire', [baseController::class, 'inventaire'])->name('inventair
 Route::post('/update-piece-count', [baseController::class, 'updatePieceCount'])->name('update-piece-count');
 
 Route::post('/search-description', [scanController::class, 'searchDescription'])->name('search-description');
+
+Route::post('remove-item', [scanController::class, 'removeItem'])->name('remove-item');
+
+Route::post('add-item', [scanController::class, 'addItem'])->name('add-item');

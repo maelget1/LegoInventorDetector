@@ -37,10 +37,10 @@ class scanController extends Controller
         $desc = $this->getData($val);
 
         session(['num' => $num]);
+        session(['val' => $val]);
 
         return view('home')->with('name', $request->name)
             ->with('class', $request->class)
-            ->with('val', $val)
             ->with('desc', $desc)
             ->with('bricks', $this->getBricks());
     }
@@ -56,7 +56,7 @@ class scanController extends Controller
         // Quote the keys
         $val = preg_replace('/([{,]\s*)(\w+)\s*:/', '$1"$2":', $val);
 
-        return json_decode($val,true);
+        return json_decode($val, true);
     }
 
     private function getNum($val)
@@ -69,7 +69,7 @@ class scanController extends Controller
     private function getData($val)
     {
         $descriptions = [];
-        foreach($val['results'] as $result) {
+        foreach ($val['results'] as $result) {
             $num = explode(' - ', $result['label']);
             $descriptions[$result['label']] = DB::table('t_pieces')->where('pie_numero', $num[0])->value('pie_description');
         }
@@ -92,9 +92,41 @@ class scanController extends Controller
     {
         $bricks = [];
         $vals = DB::table('t_pieces')->get();
-        foreach($vals as $val) {
+        foreach ($vals as $val) {
             $bricks[] = $val->pie_numero . " - " . $val->pie_couleur;  // Use object notation and string concatenation
         }
         return $bricks;
+    }
+
+    public function removeItem(Request $request)
+    {
+        $label = $request->input('label');
+        $val = session('val');
+        $val['results'] = array_filter($val['results'], function ($item) use ($label) {
+            return $item['label'] !== $label;
+        });
+
+        // Also remove from num array
+        $num = session('num');
+        unset($num[$label]);
+
+        // Update both session variables
+        session(['val' => $val]);
+        session(['num' => $num]);
+        return response()->json(['success' => true]);
+    }
+
+    public function addItem(Request $request)
+    {
+        $label = $request->input('input');
+        $val = session('val');
+        $val['results'][] = [
+            'label' => $label,
+        ];
+        session(['val' => $val]);
+        $num = session('num');
+        $num[$label] = 1;
+        session(['num' => $num]);
+        return response()->json(['success' => true]);
     }
 }

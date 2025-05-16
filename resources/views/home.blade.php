@@ -1,6 +1,7 @@
 @include('components.head')
 @php
 $num = session('num', []);
+$val = session('val', []);
 @endphp
 <!-- Formulaire de devinage -->
 <div class="w-[800px] h-[340px] mb-8 overflow-hidden transform transition-transform duration-500 hover:-translate-y-2 shadow-xl">
@@ -43,10 +44,10 @@ $num = session('num', []);
         <ul class="divide-y divide-gray-200">
 
             <div class="flex flex-col">
-                @if(is_array($val))
+                @if(is_array($val) && is_array($desc))
                 <h3 class="text-xl font-bold text-[#0A2472] mb-6">{{$name}} - {{$class}}</h3>
                 @foreach($val['results'] as $item)
-                <li class="flex items-center p-4 hover:bg-gray-50 border-b border-[#C7C7CC] transition-colors duration-150 ease-in-out mb-2">
+                <li class="flex items-center p-4 hover:bg-gray-50 border-b border-[#C7C7CC] transition-colors duration-150 ease-in-out mb-2" id="li-{{$item['label']}}">
                     <div class="flex items-center justify-center">
                         <span class="text-[#0A2472] text-lg font-bold">{{$item['label']}}</span>
                     </div>
@@ -54,18 +55,18 @@ $num = session('num', []);
                         <p class="font-medium text-[#0A2472]">{{$desc[$item['label']]}}</p>
                     </div>
                     <div class="flex items-center gap-x-4">
-                        <button class="text-[#0A2472] minus-btn bin" id="bin-{{$item['label']}}"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trash2-icon lucide-trash-2">
+                        <button class="text-[#0A2472] bin_btn" id="bin_{{$item['label']}}" onclick="remove(this.id)"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trash2-icon lucide-trash-2">
                                 <path d="M3 6h18" />
                                 <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
                                 <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
                                 <line x1="10" x2="10" y1="11" y2="17" />
                                 <line x1="14" x2="14" y1="11" y2="17" />
                             </svg></button>
-                        <button class="text-[#0A2472] minus-btn minus hidden" id="{{$item['label']}}"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-minus-icon lucide-minus">
+                        <button class="text-[#0A2472] minus-btn hidden" id="min_{{$item['label']}}"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-minus-icon lucide-minus">
                                 <path d="M5 12h14" />
                             </svg></button>
                         <p class="text-[#0A2472] font-bold" id="content-{{$item['label']}}">{{$num[$item['label']]}}</p>
-                        <button class="text-[#0A2472] plus-btn" id="{{$item['label']}}"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-plus-icon lucide-plus">
+                        <button class="text-[#0A2472] plus-btn" id="add_{{$item['label']}}"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-plus-icon lucide-plus">
                                 <path d="M5 12h14" />
                                 <path d="M12 5v14" />
                             </svg></button>
@@ -104,14 +105,38 @@ $num = session('num', []);
 <div class="mt-[30px]">
     <p class="text-[#0A2472]">Maël Gétain - TPI</p>
 </div>
-</body>
 <script>
     var count = 0;
-    document.getElementById('addButton').addEventListener('click', function() {
-        const newContainer = document.getElementById('newContainer');
-        newContainer.innerHTML += `
-            <li class="flex items-center p-4 hover:bg-gray-50 border-b border-[#C7C7CC] transition-colors duration-150 ease-in-out mb-2">
-                <div class="flex items-center justify-center" id="div-`+ count + `">
+
+function remove(id) {
+    let token = '{{ csrf_token() }}';
+    let label = id.split('_')[1];
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': token
+        }
+    });
+    $.ajax({
+        type: 'POST',
+        url: '/remove-item',
+        data: {
+            label: label,
+        },
+        success: function (response) {
+            document.getElementById('li-' + label).remove();
+        },
+        error: function (xhr, status, error) {
+            console.error('Error:', status, error);
+        }
+    })
+}
+
+
+document.getElementById('addButton').addEventListener('click', function () {
+    const newContainer = document.getElementById('newContainer');
+    newContainer.innerHTML += `
+            <li class="flex items-center p-4 hover:bg-gray-50 border-b border-[#C7C7CC] transition-colors duration-150 ease-in-out mb-2" id="li-` + count + `">
+                <div class="flex items-center justify-center" id="div-` + count + `">
                     <input type="text" id="` + count + `" onchange="searchDescription(this.id)" list="o-` + count + `"/>
                     <datalist id="o-` + count + `">
                         @foreach($bricks as $val)
@@ -123,128 +148,179 @@ $num = session('num', []);
                     </datalist>
                 </div>
                 <div class="ml-4 flex-grow">
-                    <p class="font-medium text-[#0A2472]" id="`+ count + `-desc">description</p>
+                    <p class="font-medium text-[#0A2472]" id="` + count + `-desc">description</p>
                 </div>
                 <div class="flex items-center gap-x-4 hidden" id="p-` + count + `">
-                        <button class="text-[#0A2472] minus-btn bin" id="bin-"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trash2-icon lucide-trash-2">
+                        <button class="text-[#0A2472] bin_btn" id="b1-` + count + `" onclick="remove(this.id)"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trash2-icon lucide-trash-2">
                                 <path d="M3 6h18" />
                                 <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
                                 <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
                                 <line x1="10" x2="10" y1="11" y2="17" />
                                 <line x1="14" x2="14" y1="11" y2="17" />
                             </svg></button>
-                        <button class="text-[#0A2472] minus-btn minus hidden" id=""><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-minus-icon lucide-minus">
+                        <button class="text-[#0A2472] minus-btn hidden" id="b2-` + count + `"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-minus-icon lucide-minus">
                                 <path d="M5 12h14" />
                             </svg></button>
-                        <p class="text-[#0A2472] font-bold" id="">{{$num[$item['label']]}}</p>
-                        <button class="text-[#0A2472] plus-btn" id=""><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-plus-icon lucide-plus">
+                        <p class="text-[#0A2472] font-bold" id="content-` + count + `">1</p>
+                        <button class="text-[#0A2472] plus-btn" id="b3-` + count + `"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-plus-icon lucide-plus">
                                 <path d="M5 12h14" />
                                 <path d="M12 5v14" />
                             </svg></button>
                     </div>
             </li>
             `;
-        var input = document.getElementById(count);
-        input.focus();
-        input.select(); 
-    });
-    if(document.getElementById(count)){
-        // Obtain the available browsers
-        let options = Array.from(document.querySelectorAll('#o-' + count + ' option')).map((option) => option.value);
+    var input = document.getElementById(count);
+    input.focus();
+    input.select();
+});
+if (document.getElementById(count)) {
+    // Obtain the available browsers
+    let options = Array.from(document.querySelectorAll('#o-' + count + ' option')).map((option) => option.value);
 
-        document.getElementById(count).addEventListener('input', function () {
+    document.getElementById(count).addEventListener('input', function () {
         const hint = this.value.toLowerCase();
         // Obtain options matching input
         const suggestions = options.filter((option) => option.toLowerCase().includes(hint));
 
         console.log(suggestions);
+    });
+}
+
+
+
+document.querySelectorAll('.plus-btn').forEach(btn => {
+    btn.addEventListener('click', function () {
+        let val = this.id.split('_')[1];
+        updatePieceCount(val, 1);
+    });
+});
+
+document.querySelectorAll('.minus-btn').forEach(btn => {
+    btn.addEventListener('click', function () {
+        let val = this.id.split('_')[1];
+        updatePieceCount(val, -1);
+    });
+});
+
+
+function updateButtons(input) {
+    // Get the latest added buttons only
+    const latestInput = document.getElementById('add_' + input);
+    const latestMinus = document.getElementById('min_' + input);
+
+    if (latestInput) {
+        latestInput.addEventListener('click', function () {
+            let val = this.id.split('_')[1];
+            updatePieceCount(val, 1);
         });
     }
-        
 
-
-    document.querySelectorAll('.plus-btn').forEach(btn => {
-        btn.addEventListener('click', function() {
-            updatePieceCount(this.id, 1);
+    if (latestMinus) {
+        latestMinus.addEventListener('click', function () {
+            let val = this.id.split('_')[1];
+            updatePieceCount(val, -1);
         });
-    });
-
-    document.querySelectorAll('.minus-btn').forEach(btn => {
-        btn.addEventListener('click', function() {
-            updatePieceCount(this.id, -1);
-        });
-    });
-
-
-    /*csrf token is not same as cookie*/
-    function updatePieceCount(label, delta) {
-        let token = '{{ csrf_token() }}';
-        $.ajaxSetup({
-            headers: {
-                'X-CSRF-TOKEN': token
-            }
-        });
-        $.ajax({
-            type: 'POST',
-            url: '/update-piece-count',
-            data: {
-                label: label,
-                delta: delta,
-            },
-            success: function(response) {
-                // Update the counter
-                const counter = document.getElementById('content-' + label);
-                const newValue = parseInt(counter.textContent) + delta;
-                counter.textContent = newValue;
-
-                // Get both button versions
-                const minusBtn = document.getElementById(label);
-                const binBtn = document.getElementById('bin-' + label);
-
-                // Show/hide appropriate button based on count
-                if (newValue === 1) {
-                    minusBtn.style.display = 'none';
-                    binBtn.style.display = 'block';
-                } else {
-                    minusBtn.style.display = 'block';
-                    binBtn.style.display = 'none';
-                }
-            },
-            error: function(xhr, status, error) {
-                console.error('Error:', status, error);
-            }
-        })
     }
+}
 
-    function searchDescription(id){
-        var input = document.getElementById(id).value;
-        let token = '{{ csrf_token() }}';
-        $.ajaxSetup({
-            headers: {
-                'X-CSRF-TOKEN': token
+/*csrf token is not same as cookie*/
+function updatePieceCount(label, delta) {
+    let token = '{{ csrf_token() }}';
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': token
+        }
+    });
+    $.ajax({
+        type: 'POST',
+        url: '/update-piece-count',
+        data: {
+            label: label,
+            delta: delta,
+        },
+        success: function (response) {
+            // Update the counter
+            const counter = document.getElementById('content-' + label);
+            const newValue = parseInt(counter.textContent) + delta;
+            counter.textContent = newValue;
+
+            // Get both button versions
+            const minusBtn = document.getElementById('min_' + label);
+            const binBtn = document.getElementById('bin_' + label);
+
+            // Show/hide appropriate button based on count
+            if (newValue > 1) {
+                minusBtn.classList.remove('hidden');
+                binBtn.classList.add('hidden');
+            } else {
+                minusBtn.classList.add('hidden');
+                binBtn.classList.remove('hidden');
             }
-        });
-        $.ajax({
-            type: 'POST',
-            url: '/search-description',
-            data: {
-                input: input,
-            },
-            success: function(response) {
-                // Update the description
-                const description = document.getElementById(id + '-desc');
-                description.textContent = response.description;
-                document.getElementById('div-' + id).innerHTML = `
+        },
+        error: function (xhr, status, error) {
+            console.error('Error:', status, error);
+        }
+    })
+}
+
+function searchDescription(id) {
+    var input = document.getElementById(id).value;
+    let token = '{{ csrf_token() }}';
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': token
+        }
+    });
+    $.ajax({
+        type: 'POST',
+        url: '/search-description',
+        data: {
+            input: input,
+        },
+        success: function (response) {
+            // Update the description
+            const description = document.getElementById(id + '-desc');
+            description.textContent = response.description;
+            document.getElementById('div-' + id).innerHTML = `
                 <span class="text-[#0A2472] text-lg font-bold">` + input + `</span>
                 `;
-                document.getElementById('p-' + id).classList.remove('hidden');
-                count++;
-            },
-            error: function(xhr, status, error) {
-                console.error('Error:', status, error);
-            }
-        })
-    }
-</script>
+            document.getElementById('p-' + id).classList.remove('hidden');
+            document.getElementById('b1-' + id).setAttribute('id', 'bin_' + input);
+            document.getElementById('b2-' + id).setAttribute('id', 'min_' + input);
+            document.getElementById('b3-' + id).setAttribute('id', 'add_' + input);
+            document.getElementById('content-' + id).setAttribute('id', 'content-' + input);
+            document.getElementById('li-' + id).setAttribute('id', 'li-' + input);
+            addItem(input);
+            count++;
+            updateButtons(input);
+        },
+        error: function (xhr, status, error) {
+            console.error('Error:', status, error);
+        }
+    })
+}
 
+function addItem(input) {
+    let token = '{{ csrf_token() }}';
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': token
+        }
+    });
+    $.ajax({
+        type: 'POST',
+        url: '/add-item',
+        data: {
+            input: input,
+        },
+        success: function (response) {
+            //rien de spécial
+        },
+        error: function (xhr, status, error) {
+            console.error('Error:', status, error);
+        }
+    })
+}
+</script>
+</body>
 </html>
