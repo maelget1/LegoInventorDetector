@@ -11,3 +11,5 @@ Route::post('submit', [scanController::class, 'submit'])->name('submit');
 Route::get('inventaire', [baseController::class, 'inventaire'])->name('inventaire');
 
 Route::post('/update-piece-count', [baseController::class, 'updatePieceCount'])->name('update-piece-count');
+
+Route::post('/search-description', [scanController::class, 'searchDescription'])->name('search-description');

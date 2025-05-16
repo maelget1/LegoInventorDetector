@@ -36,11 +36,13 @@ class scanController extends Controller
 
         $desc = $this->getData($val);
 
+        session(['num' => $num]);
+
         return view('home')->with('name', $request->name)
             ->with('class', $request->class)
             ->with('val', $val)
-            ->with('num', $num)
-            ->with('desc', $desc);
+            ->with('desc', $desc)
+            ->with('bricks', $this->getBricks());
     }
 
     private function cleanJSON($val)
@@ -72,5 +74,27 @@ class scanController extends Controller
             $descriptions[$result['label']] = DB::table('t_pieces')->where('pie_numero', $num[0])->value('pie_description');
         }
         return $descriptions;
+    }
+
+    public function searchDescription(Request $request)
+    {
+        $searchTerm = $request->input('input');
+        $val = explode(' - ', $searchTerm);
+        $result = DB::table('t_pieces')
+            ->where('pie_numero', 'LIKE', '%' . $val[0] . '%')
+            ->where('pie_couleur', 'LIKE', '%' . $val[1] . '%')
+            ->value('pie_description');
+
+        return response()->json(['success' => true, 'description' => $result]);
+    }
+
+    private function getBricks()
+    {
+        $bricks = [];
+        $vals = DB::table('t_pieces')->get();
+        foreach($vals as $val) {
+            $bricks[] = $val->pie_numero . " - " . $val->pie_couleur;  // Use object notation and string concatenation
+        }
+        return $bricks;
     }
 }
