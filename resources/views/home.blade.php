@@ -1,13 +1,15 @@
 @include('components.head')
+@include('sweetalert2::index')
 @php
 $num = session('num', []);
 $val = session('val', []);
 @endphp
 <!-- Formulaire de devinage -->
 <div class="w-[800px] h-[340px] mb-8 overflow-hidden transform transition-transform duration-500 hover:-translate-y-2 shadow-xl">
-    <form method="POST" action="{{route('submit')}}" accept-charset="UTF-8" enctype="multipart/form-data" class="w-full h-full mx-auto p-6 bg-white rounded-[20px] ">
+    <form method="POST" action="{{route('submit')}}" accept-charset="UTF-8" enctype="multipart/form-data" class="w-full h-full mx-auto p-6 bg-white rounded-[20px]">
         @csrf
         <div class="mb-4 flex justify-between">
+            @if(is_array($id))
             <div class="flex flex-col">
                 <label for="name" class="mb-2 font-medium text-[#0A2472]">Nom de l'élève</label>
                 <input type="input" name="name" id="name" class="w-[350px] h-[50px] bg-[#F2F2F7] rounded-[20px] indent-4">
@@ -16,6 +18,16 @@ $val = session('val', []);
                 <label for="name" class="mb-2 font-medium text-[#0A2472]">Classe</label>
                 <input type="input" name="class" id="class" class="w-[350px] h-[50px] bg-[#F2F2F7] rounded-[20px] indent-4">
             </div>
+            @else
+            <div class="flex flex-col">
+                <label for="name" class="mb-2 font-medium text-[#0A2472]">Nom de l'élève</label>
+                <input type="input" name="name" id="name" value="{{$name}}" class="w-[350px] h-[50px] bg-[#F2F2F7] rounded-[20px] indent-4" disabled>
+            </div>
+            <div class="flex flex-col">
+                <label for="name" class="mb-2 font-medium text-[#0A2472]">Classe</label>
+                <input type="input" name="class" id="class" value="{{$class}}"class="w-[350px] h-[50px] bg-[#F2F2F7] rounded-[20px] indent-4" disabled>
+            </div>
+            @endif
         </div>
         <div class="mb-4">
             <div class="flex flex-col">
@@ -82,7 +94,7 @@ $val = session('val', []);
                     </svg>
                 </button>
                 @else
-                <h3 class="flex justify-center text-xl font-bold text-[#8E8E93] mb-6">Aucune pièce scannées</h3>
+                <h3 class="flex justify-center text-xl font-bold text-[#8E8E93] mb-6">Aucune pièce scannée</h3>
                 <label class=" flex justify-center text-[#8E8E93]">
                     <svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-frown-icon lucide-frown">
                         <circle cx="12" cy="12" r="10" />
@@ -98,9 +110,14 @@ $val = session('val', []);
     </div>
 </div>
 @if(is_array($val))
-<button class="flex justify-center items-center rounded-[10px] w-[200px] h-[40px] text-white font-semibold bg-[#0E6BA8]">
-    Inventorier
-</button>
+<form  method="POST" action="{{route('inventory')}}" accept-charset="UTF-8">
+    @csrf
+    <input type="hidden" name="name" value="{{$name}}">
+    <input type="hidden" name="class" value="{{$class}}">
+    <button class="flex justify-center items-center rounded-[10px] w-[200px] h-[40px] text-white font-semibold bg-[#0E6BA8]">
+        Inventorier
+    </button>
+</form>
 @endif
 <div class="mt-[30px]">
     <p class="text-[#0A2472]">Maël Gétain - TPI</p>
@@ -140,10 +157,7 @@ document.getElementById('addButton').addEventListener('click', function () {
                     <input type="text" id="` + count + `" onchange="searchDescription(this.id)" list="o-` + count + `"/>
                     <datalist id="o-` + count + `">
                         @foreach($bricks as $val)
-                            @if($loop->index < 5)
                             <option value="{{$val}}">{{$val}}</option>
-                            @endif
-                            <option value="{{$val}}" class="invisible">{{$val}}</option>
                         @endforeach
                     </datalist>
                 </div>
@@ -174,12 +188,13 @@ document.getElementById('addButton').addEventListener('click', function () {
     input.select();
 });
 if (document.getElementById(count)) {
-    // Obtain the available browsers
+
+    // Récupère la liste entière des options
     let options = Array.from(document.querySelectorAll('#o-' + count + ' option')).map((option) => option.value);
 
     document.getElementById(count).addEventListener('input', function () {
         const hint = this.value.toLowerCase();
-        // Obtain options matching input
+        // Récupère les options qui contiennent la partie écrite (hint)
         const suggestions = options.filter((option) => option.toLowerCase().includes(hint));
 
         console.log(suggestions);

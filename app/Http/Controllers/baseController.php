@@ -9,12 +9,7 @@ class baseController extends Controller
     //
     public function home()
     {
-        return view('home')->with('name', '')->with('class', '')->with('val', '')->with('num', '')->with('desc', '')->with('bricks', []);
-    }
-
-    public function inventaire()
-    {
-        return view('inventaire');
+        return view('home')->with('name', '')->with('class', '')->with('val', '')->with('num', '')->with('desc', '')->with('bricks', [])->with('id', '');
     }
 
     public function updatePieceCount(Request $request)

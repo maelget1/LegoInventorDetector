@@ -42,18 +42,19 @@ class scanController extends Controller
         return view('home')->with('name', $request->name)
             ->with('class', $request->class)
             ->with('desc', $desc)
+            ->with('id', '')
             ->with('bricks', $this->getBricks());
     }
 
     private function cleanJSON($val)
     {
-        // Remove trailing " 0"
+        // Enlève le caractère à la fin
         $val = preg_replace('/}\s*[^}]*$/', '}', $val);
 
-        // Replace single quotes with double quotes
+        // Remplace le guillement simple par double
         $val = str_replace("'", '"', $val);
 
-        // Quote the keys
+        // Mettre les guillemets sur les clés
         $val = preg_replace('/([{,]\s*)(\w+)\s*:/', '$1"$2":', $val);
 
         return json_decode($val, true);
@@ -102,15 +103,17 @@ class scanController extends Controller
     {
         $label = $request->input('label');
         $val = session('val');
+
+        //permet de supprimer le bon élément de la liste
         $val['results'] = array_filter($val['results'], function ($item) use ($label) {
             return $item['label'] !== $label;
         });
 
-        // Also remove from num array
+        // Supprime aussi l'élément de la session num
         $num = session('num');
         unset($num[$label]);
 
-        // Update both session variables
+        // Mets à jour nos variables de session
         session(['val' => $val]);
         session(['num' => $num]);
         return response()->json(['success' => true]);
