@@ -3,30 +3,33 @@
 @php
 $num = session('num', []);
 $val = session('val', []);
+$newId = session('id', $id);
 @endphp
 <!-- Formulaire de devinage -->
 <div class="w-[800px] h-[340px] mb-8 overflow-hidden transform transition-transform duration-500 hover:-translate-y-2 shadow-xl">
     <form method="POST" action="{{route('submit')}}" accept-charset="UTF-8" enctype="multipart/form-data" class="w-full h-full mx-auto p-6 bg-white rounded-[20px]">
         @csrf
         <div class="mb-4 flex justify-between">
-            @if(is_array($id))
+            @if($newId === 0)
             <div class="flex flex-col">
                 <label for="name" class="mb-2 font-medium text-[#0A2472]">Nom de l'élève</label>
                 <input type="input" name="name" id="name" class="w-[350px] h-[50px] bg-[#F2F2F7] rounded-[20px] indent-4">
             </div>
             <div class="flex flex-col">
-                <label for="name" class="mb-2 font-medium text-[#0A2472]">Classe</label>
+                <label for="class" class="mb-2 font-medium text-[#0A2472]">Classe</label>
                 <input type="input" name="class" id="class" class="w-[350px] h-[50px] bg-[#F2F2F7] rounded-[20px] indent-4">
             </div>
+            <input type="hidden" name="id" id="id" value="{{$id}}">
             @else
             <div class="flex flex-col">
                 <label for="name" class="mb-2 font-medium text-[#0A2472]">Nom de l'élève</label>
-                <input type="input" name="name" id="name" value="{{$name}}" class="w-[350px] h-[50px] bg-[#F2F2F7] rounded-[20px] indent-4" disabled>
+                <input type="text" name="name" id="name" value="{{$name}}" class="w-[350px] h-[50px] bg-[#F2F2F7] rounded-[20px] indent-4" readonly>
             </div>
             <div class="flex flex-col">
-                <label for="name" class="mb-2 font-medium text-[#0A2472]">Classe</label>
-                <input type="input" name="class" id="class" value="{{$class}}"class="w-[350px] h-[50px] bg-[#F2F2F7] rounded-[20px] indent-4" disabled>
+                <label for="class" class="mb-2 font-medium text-[#0A2472]">Classe</label>
+                <input type="text" name="class" id="class" value="{{$class}}" class="w-[350px] h-[50px] bg-[#F2F2F7] rounded-[20px] indent-4" readonly>
             </div>
+            <input type="hidden" name="id" id="id" value="{{$id}}">
             @endif
         </div>
         <div class="mb-4">
@@ -43,9 +46,15 @@ $val = session('val', []);
             </div>
         </div>
         <div class="w-full flex justify-center h-[40px]">
+            @if($newId === 0)
             <button type="submit" class="rounded-[10px] font-semibold bg-[#0E6BA8] text-white w-[200px]">
                 Valider
             </button>
+            @else
+            <button type="submit" class="rounded-[10px] font-semibold bg-[#0E6BA8] text-white w-[200px]">
+                Valider le retour
+            </button>
+            @endif
         </div>
     </form>
 </div>
@@ -110,6 +119,15 @@ $val = session('val', []);
     </div>
 </div>
 @if(is_array($val))
+@if($newId !== 0)
+<form  method="POST" action="{{route('check')}}" accept-charset="UTF-8">
+    @csrf
+    <input type="hidden" name="id" value="{{$id}}">
+    <button class="flex justify-center items-center rounded-[10px] w-[200px] h-[40px] text-white font-semibold bg-[#0E6BA8]">
+        Vérifier
+    </button>
+</form>
+@else
 <form  method="POST" action="{{route('inventory')}}" accept-charset="UTF-8">
     @csrf
     <input type="hidden" name="name" value="{{$name}}">
@@ -118,6 +136,7 @@ $val = session('val', []);
         Inventorier
     </button>
 </form>
+@endif
 @endif
 <div class="mt-[30px]">
     <p class="text-[#0A2472]">Maël Gétain - TPI</p>

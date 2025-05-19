@@ -9,7 +9,8 @@ class baseController extends Controller
     //
     public function home()
     {
-        return view('home')->with('name', '')->with('class', '')->with('val', '')->with('num', '')->with('desc', '')->with('bricks', [])->with('id', '');
+        session()->forget(['val', 'num', 'id']);
+        return view('home')->with('name', '')->with('class', '')->with('val', '')->with('num', '')->with('desc', '')->with('bricks', [])->with('id', 0);
     }
 
     public function updatePieceCount(Request $request)

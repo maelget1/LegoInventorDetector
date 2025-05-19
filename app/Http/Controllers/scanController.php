@@ -18,6 +18,7 @@ class scanController extends Controller
             'name' => 'required|string|max:50',
             'class' => 'required|string|max:6',
             'image' => 'required|image|mimes:jpeg,png,jpg,gif',
+            'id' => 'required|integer',
         ]);
 
         // stock l'image
@@ -38,11 +39,19 @@ class scanController extends Controller
 
         session(['num' => $num]);
         session(['val' => $val]);
+        if($request->id != 0){
+            session(['id' => $request->id]);
+            $id = $request->id;
+        }
+        else{
+            $id = 0;
+        }
+        
 
         return view('home')->with('name', $request->name)
             ->with('class', $request->class)
             ->with('desc', $desc)
-            ->with('id', '')
+            ->with('id', $id)
             ->with('bricks', $this->getBricks());
     }
 

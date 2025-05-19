@@ -60,14 +60,19 @@ class listController extends Controller
     }
 
     public function verify($id){
-        $value = DB::table('t_eleves')->where('ele_id', $id)->value('ele_nom', 'ele_classe');
+        $name = DB::table('t_eleves')->where('ele_id', $id)->value('ele_nom');
+        $class = DB::table('t_eleves')->where('ele_id', $id)->value('ele_classe');
         return view('home')
-            ->with('name', $value->ele_nom)
-            ->with('class', $value->ele_classe)
+            ->with('name', $name)
+            ->with('class', $class)
             ->with('val', '')
             ->with('num', '')
             ->with('desc', '')
             ->with('bricks', [])
             ->with('id', $id);
+    }
+
+    public function check(Request $request)
+    {
     }
 }

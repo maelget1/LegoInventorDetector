@@ -24,3 +24,5 @@ Route::post('inventory', [listController::class, 'inventory'])->name('inventory'
 Route::get('verify/{id}', [listController::class, 'verify']);
 
 Route::post('verify-submit', [scanController::class, 'verifySubmit'])->name('verify-submit');
+
+Route::post('check', [listController::class, 'check'])->name('check');
