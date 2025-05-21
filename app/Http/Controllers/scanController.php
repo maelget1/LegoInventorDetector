@@ -1,13 +1,41 @@
 <?php
-
+/*
+ETML
+Auteur: Maël Gétain
+Date: 21.05.2025
+Description: Class scanController. Les intéractions liées à la page scan se font ici
+*/
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class scanController extends Controller
-{
-    //
+{    
+    /**
+     * updatePieceCount
+     *
+     * va incrémenter ou décrémenter le nombre de pièces scannées en fonction du clique
+     * @param  mixed $request
+     * @return json
+     */
+    public function updatePieceCount(Request $request)
+    {
+        $label = $request->input('label');
+        $delta = $request->input('delta');
+        // Update your session or DB here, e.g.:
+        $num = session('num');
+        $num[$label] += $delta;
+        session(['num' => $num]);
+        return response()->json(['success' => true]);
+    }
+    
+    /**
+     * submit
+     * fonction qui va gérer le formulaire de scan et lancer le processus IA
+     * @param  mixed $request
+     * @return void
+     */
     public function submit(Request $request)
     {
         ini_set('memory_limit', '4096M');
@@ -54,7 +82,14 @@ class scanController extends Controller
             ->with('id', $id)
             ->with('bricks', $this->getBricks());
     }
-
+    
+    /**
+     * cleanJSON
+     *
+     * nettoie le JSON renvoyé par le script python afin de le rendre exploitable
+     * @param  mixed $val
+     * @return json
+     */
     private function cleanJSON($val)
     {
         // Enlève le caractère à la fin
@@ -68,14 +103,28 @@ class scanController extends Controller
 
         return json_decode($val, true);
     }
-
+    
+    /**
+     * getNum
+     *
+     * permet de récupérer le nombre de pièces scannées (si certaines apparaissent plusieurs fois cela sert)
+     * @param  mixed $val
+     * @return array
+     */
     private function getNum($val)
     {
         $labels = array_column($val['results'], 'label');
 
         return array_count_values($labels);
     }
-
+    
+    /**
+     * getData
+     *
+     * permet de récupérer la description des pièces scannées
+     * @param  mixed $val
+     * @return array
+     */
     private function getData($val)
     {
         $descriptions = [];
@@ -85,7 +134,14 @@ class scanController extends Controller
         }
         return $descriptions;
     }
-
+    
+    /**
+     * searchDescription
+     *
+     * fonction qui va récupérer la description de la pièce qui sera selectionnée lors du clique sur le +
+     * @param  mixed $request
+     * @return json
+     */
     public function searchDescription(Request $request)
     {
         $searchTerm = $request->input('input');
@@ -97,17 +153,30 @@ class scanController extends Controller
 
         return response()->json(['success' => true, 'description' => $result]);
     }
-
+    
+    /**
+     * getBricks
+     *
+     * permet de récupérer toutes les pièces de la base de données (pour suggérer dans la datalist)
+     * @return array
+     */
     private function getBricks()
     {
         $bricks = [];
         $vals = DB::table('t_pieces')->get();
         foreach ($vals as $val) {
-            $bricks[] = $val->pie_numero . " - " . $val->pie_couleur;  // Use object notation and string concatenation
+            $bricks[] = $val->pie_numero . " - " . $val->pie_couleur;
         }
         return $bricks;
     }
-
+    
+    /**
+     * removeItem
+     *
+     * fonction qui va supprimer un élément de la liste des pièces scannées (donc avant validation)
+     * @param  mixed $request
+     * @return json
+     */
     public function removeItem(Request $request)
     {
         $label = $request->input('label');
@@ -122,12 +191,19 @@ class scanController extends Controller
         $num = session('num');
         unset($num[$label]);
 
-        // Mets à jour nos variables de session
+        // Mets à jour les variables de session
         session(['val' => $val]);
         session(['num' => $num]);
         return response()->json(['success' => true]);
     }
-
+    
+    /**
+     * addItem
+     *
+     * fonction lors du clique du + elle permet de prendre la valeur noté pour l'ajouter à la liste temporaire (avant validation donc)
+     * @param  mixed $request
+     * @return json
+     */
     public function addItem(Request $request)
     {
         $label = $request->input('input');

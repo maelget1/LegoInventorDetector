@@ -1,4 +1,10 @@
 <?php
+/*
+ETML
+Auteur: Maël Gétain
+Date: 21.05.2025
+Description: Routes de l'application
+*/
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\scanController;
@@ -11,7 +17,7 @@ Route::post('submit', [scanController::class, 'submit'])->name('submit');
 
 Route::get('inventaire', [listController::class, 'showInventory'])->name('inventaire');
 
-Route::post('/update-piece-count', [baseController::class, 'updatePieceCount'])->name('update-piece-count');
+Route::post('/update-piece-count', [scanController::class, 'updatePieceCount'])->name('update-piece-count');
 
 Route::post('/search-description', [scanController::class, 'searchDescription'])->name('search-description');
 
@@ -26,3 +32,5 @@ Route::get('verify/{id}', [listController::class, 'verify']);
 Route::post('verify-submit', [scanController::class, 'verifySubmit'])->name('verify-submit');
 
 Route::post('check', [listController::class, 'check'])->name('check');
+
+Route::get('delete/{id}', [listController::class, 'delete']);

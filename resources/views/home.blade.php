@@ -1,11 +1,18 @@
+<!--
+ETML
+Auteur: Maël Gétain
+Date: 21.05.2025
+Description: Page d'accueil mais aussi de scan de pièces LEGO
+-->
 @include('components.head')
 @include('sweetalert2::index')
+
 @php
 $num = session('num', []);
 $val = session('val', []);
 $newId = session('id', $id);
 @endphp
-<!-- Formulaire de devinage -->
+<!-- Formulaire de scan -->
 <div class="w-[800px] h-[340px] mb-8 overflow-hidden transform transition-transform duration-500 hover:-translate-y-2 shadow-xl">
     <form method="POST" action="{{route('submit')}}" accept-charset="UTF-8" enctype="multipart/form-data" class="w-full h-full mx-auto p-6 bg-white rounded-[20px]">
         @csrf
@@ -120,7 +127,7 @@ $newId = session('id', $id);
 </div>
 @if(is_array($val))
 @if($newId !== 0)
-<form  method="POST" action="{{route('check')}}" accept-charset="UTF-8">
+<form method="POST" action="{{route('check')}}" accept-charset="UTF-8">
     @csrf
     <input type="hidden" name="id" value="{{$id}}">
     <button class="flex justify-center items-center rounded-[10px] w-[200px] h-[40px] text-white font-semibold bg-[#0E6BA8]">
@@ -128,7 +135,7 @@ $newId = session('id', $id);
     </button>
 </form>
 @else
-<form  method="POST" action="{{route('inventory')}}" accept-charset="UTF-8">
+<form method="POST" action="{{route('inventory')}}" accept-charset="UTF-8">
     @csrf
     <input type="hidden" name="name" value="{{$name}}">
     <input type="hidden" name="class" value="{{$class}}">
@@ -144,33 +151,33 @@ $newId = session('id', $id);
 <script>
     var count = 0;
 
-function remove(id) {
-    let token = '{{ csrf_token() }}';
-    let label = id.split('_')[1];
-    $.ajaxSetup({
-        headers: {
-            'X-CSRF-TOKEN': token
-        }
-    });
-    $.ajax({
-        type: 'POST',
-        url: '/remove-item',
-        data: {
-            label: label,
-        },
-        success: function (response) {
-            document.getElementById('li-' + label).remove();
-        },
-        error: function (xhr, status, error) {
-            console.error('Error:', status, error);
-        }
-    })
-}
+    function remove(id) {
+        let token = '{{ csrf_token() }}';
+        let label = id.split('_')[1];
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': token
+            }
+        });
+        $.ajax({
+            type: 'POST',
+            url: '/remove-item',
+            data: {
+                label: label,
+            },
+            success: function(response) {
+                document.getElementById('li-' + label).remove();
+            },
+            error: function(xhr, status, error) {
+                console.error('Error:', status, error);
+            }
+        })
+    }
 
 
-document.getElementById('addButton').addEventListener('click', function () {
-    const newContainer = document.getElementById('newContainer');
-    newContainer.innerHTML += `
+    document.getElementById('addButton').addEventListener('click', function() {
+        const newContainer = document.getElementById('newContainer');
+        newContainer.innerHTML += `
             <li class="flex items-center p-4 hover:bg-gray-50 border-b border-[#C7C7CC] transition-colors duration-150 ease-in-out mb-2" id="li-` + count + `">
                 <div class="flex items-center justify-center" id="div-` + count + `">
                     <input type="text" id="` + count + `" onchange="searchDescription(this.id)" list="o-` + count + `"/>
@@ -202,159 +209,160 @@ document.getElementById('addButton').addEventListener('click', function () {
                     </div>
             </li>
             `;
-    var input = document.getElementById(count);
-    input.focus();
-    input.select();
-});
-if (document.getElementById(count)) {
-
-    // Récupère la liste entière des options
-    let options = Array.from(document.querySelectorAll('#o-' + count + ' option')).map((option) => option.value);
-
-    document.getElementById(count).addEventListener('input', function () {
-        const hint = this.value.toLowerCase();
-        // Récupère les options qui contiennent la partie écrite (hint)
-        const suggestions = options.filter((option) => option.toLowerCase().includes(hint));
-
-        console.log(suggestions);
+        var input = document.getElementById(count);
+        input.focus();
+        input.select();
     });
-}
+    if (document.getElementById(count)) {
+
+        // Récupère la liste entière des options
+        let options = Array.from(document.querySelectorAll('#o-' + count + ' option')).map((option) => option.value);
+
+        document.getElementById(count).addEventListener('input', function() {
+            const hint = this.value.toLowerCase();
+            // Récupère les options qui contiennent la partie écrite (hint)
+            const suggestions = options.filter((option) => option.toLowerCase().includes(hint));
+
+            console.log(suggestions);
+        });
+    }
 
 
 
-document.querySelectorAll('.plus-btn').forEach(btn => {
-    btn.addEventListener('click', function () {
-        let val = this.id.split('_')[1];
-        updatePieceCount(val, 1);
-    });
-});
-
-document.querySelectorAll('.minus-btn').forEach(btn => {
-    btn.addEventListener('click', function () {
-        let val = this.id.split('_')[1];
-        updatePieceCount(val, -1);
-    });
-});
-
-
-function updateButtons(input) {
-    // Get the latest added buttons only
-    const latestInput = document.getElementById('add_' + input);
-    const latestMinus = document.getElementById('min_' + input);
-
-    if (latestInput) {
-        latestInput.addEventListener('click', function () {
+    document.querySelectorAll('.plus-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
             let val = this.id.split('_')[1];
             updatePieceCount(val, 1);
         });
-    }
+    });
 
-    if (latestMinus) {
-        latestMinus.addEventListener('click', function () {
+    document.querySelectorAll('.minus-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
             let val = this.id.split('_')[1];
             updatePieceCount(val, -1);
         });
+    });
+
+
+    function updateButtons(input) {
+        // Get the latest added buttons only
+        const latestInput = document.getElementById('add_' + input);
+        const latestMinus = document.getElementById('min_' + input);
+
+        if (latestInput) {
+            latestInput.addEventListener('click', function() {
+                let val = this.id.split('_')[1];
+                updatePieceCount(val, 1);
+            });
+        }
+
+        if (latestMinus) {
+            latestMinus.addEventListener('click', function() {
+                let val = this.id.split('_')[1];
+                updatePieceCount(val, -1);
+            });
+        }
     }
-}
 
-/*csrf token is not same as cookie*/
-function updatePieceCount(label, delta) {
-    let token = '{{ csrf_token() }}';
-    $.ajaxSetup({
-        headers: {
-            'X-CSRF-TOKEN': token
-        }
-    });
-    $.ajax({
-        type: 'POST',
-        url: '/update-piece-count',
-        data: {
-            label: label,
-            delta: delta,
-        },
-        success: function (response) {
-            // Update the counter
-            const counter = document.getElementById('content-' + label);
-            const newValue = parseInt(counter.textContent) + delta;
-            counter.textContent = newValue;
-
-            // Get both button versions
-            const minusBtn = document.getElementById('min_' + label);
-            const binBtn = document.getElementById('bin_' + label);
-
-            // Show/hide appropriate button based on count
-            if (newValue > 1) {
-                minusBtn.classList.remove('hidden');
-                binBtn.classList.add('hidden');
-            } else {
-                minusBtn.classList.add('hidden');
-                binBtn.classList.remove('hidden');
+    /*csrf token is not same as cookie*/
+    function updatePieceCount(label, delta) {
+        let token = '{{ csrf_token() }}';
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': token
             }
-        },
-        error: function (xhr, status, error) {
-            console.error('Error:', status, error);
-        }
-    })
-}
+        });
+        $.ajax({
+            type: 'POST',
+            url: '/update-piece-count',
+            data: {
+                label: label,
+                delta: delta,
+            },
+            success: function(response) {
+                // Update the counter
+                const counter = document.getElementById('content-' + label);
+                const newValue = parseInt(counter.textContent) + delta;
+                counter.textContent = newValue;
 
-function searchDescription(id) {
-    var input = document.getElementById(id).value;
-    let token = '{{ csrf_token() }}';
-    $.ajaxSetup({
-        headers: {
-            'X-CSRF-TOKEN': token
-        }
-    });
-    $.ajax({
-        type: 'POST',
-        url: '/search-description',
-        data: {
-            input: input,
-        },
-        success: function (response) {
-            // Update the description
-            const description = document.getElementById(id + '-desc');
-            description.textContent = response.description;
-            document.getElementById('div-' + id).innerHTML = `
+                // Get both button versions
+                const minusBtn = document.getElementById('min_' + label);
+                const binBtn = document.getElementById('bin_' + label);
+
+                // Show/hide appropriate button based on count
+                if (newValue > 1) {
+                    minusBtn.classList.remove('hidden');
+                    binBtn.classList.add('hidden');
+                } else {
+                    minusBtn.classList.add('hidden');
+                    binBtn.classList.remove('hidden');
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('Error:', status, error);
+            }
+        })
+    }
+
+    function searchDescription(id) {
+        var input = document.getElementById(id).value;
+        let token = '{{ csrf_token() }}';
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': token
+            }
+        });
+        $.ajax({
+            type: 'POST',
+            url: '/search-description',
+            data: {
+                input: input,
+            },
+            success: function(response) {
+                // Update the description
+                const description = document.getElementById(id + '-desc');
+                description.textContent = response.description;
+                document.getElementById('div-' + id).innerHTML = `
                 <span class="text-[#0A2472] text-lg font-bold">` + input + `</span>
                 `;
-            document.getElementById('p-' + id).classList.remove('hidden');
-            document.getElementById('b1-' + id).setAttribute('id', 'bin_' + input);
-            document.getElementById('b2-' + id).setAttribute('id', 'min_' + input);
-            document.getElementById('b3-' + id).setAttribute('id', 'add_' + input);
-            document.getElementById('content-' + id).setAttribute('id', 'content-' + input);
-            document.getElementById('li-' + id).setAttribute('id', 'li-' + input);
-            addItem(input);
-            count++;
-            updateButtons(input);
-        },
-        error: function (xhr, status, error) {
-            console.error('Error:', status, error);
-        }
-    })
-}
+                document.getElementById('p-' + id).classList.remove('hidden');
+                document.getElementById('b1-' + id).setAttribute('id', 'bin_' + input);
+                document.getElementById('b2-' + id).setAttribute('id', 'min_' + input);
+                document.getElementById('b3-' + id).setAttribute('id', 'add_' + input);
+                document.getElementById('content-' + id).setAttribute('id', 'content-' + input);
+                document.getElementById('li-' + id).setAttribute('id', 'li-' + input);
+                addItem(input);
+                count++;
+                updateButtons(input);
+            },
+            error: function(xhr, status, error) {
+                console.error('Error:', status, error);
+            }
+        })
+    }
 
-function addItem(input) {
-    let token = '{{ csrf_token() }}';
-    $.ajaxSetup({
-        headers: {
-            'X-CSRF-TOKEN': token
-        }
-    });
-    $.ajax({
-        type: 'POST',
-        url: '/add-item',
-        data: {
-            input: input,
-        },
-        success: function (response) {
-            //rien de spécial
-        },
-        error: function (xhr, status, error) {
-            console.error('Error:', status, error);
-        }
-    })
-}
+    function addItem(input) {
+        let token = '{{ csrf_token() }}';
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': token
+            }
+        });
+        $.ajax({
+            type: 'POST',
+            url: '/add-item',
+            data: {
+                input: input,
+            },
+            success: function(response) {
+                //rien de spécial
+            },
+            error: function(xhr, status, error) {
+                console.error('Error:', status, error);
+            }
+        })
+    }
 </script>
 </body>
+
 </html>
