@@ -23,7 +23,6 @@ class scanController extends Controller
     {
         $label = $request->input('label');
         $delta = $request->input('delta');
-        // Update your session or DB here, e.g.:
         $num = session('num');
         $num[$label] += $delta;
         session(['num' => $num]);

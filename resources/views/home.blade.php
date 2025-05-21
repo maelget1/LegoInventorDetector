@@ -49,7 +49,7 @@ $newId = session('id', $id);
                     </svg>
                     Déposer un fichier ou cliquer pour prendre une photo
                 </label>
-                <input type="file" name="image" id="image" class="hidden" accept="image/*">
+                <input type="file" name="image" id="image" class="hidden" accept="image/*" onchange="changeText()" capture="environment" required>
             </div>
         </div>
         <div class="w-full flex justify-center h-[40px]">
@@ -362,6 +362,12 @@ $newId = session('id', $id);
             }
         })
     }
+
+    function changeText() {
+        const label = document.querySelector('label[for="image"]');
+        label.textContent = "Une image a bien été ajoutée";
+    }
+
 </script>
 </body>
 
