@@ -5,6 +5,7 @@ Auteur: Maël Gétain
 Date: 21.05.2025
 Description: Class listController. Les intéractions liées à la page inventaire se font ici
 */
+
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
@@ -13,7 +14,7 @@ use SweetAlert2\Laravel\Swal;
 
 class listController extends Controller
 {
-        
+
     /**
      * inventory
      * 
@@ -23,42 +24,51 @@ class listController extends Controller
      */
     public function inventory(Request $request)
     {
-        $request->validate([
-            'name' => 'required|string|max:50',
-            'class' => 'required|string|max:6',
-        ]);
-
-        if (null !== session('id'))
-            DB::table('t_eleves')->insert([
-                'ele_nom' => $request->name,
-                'ele_classe' => $request->class,
+        if (session('val') == true && session('val')['results'] != []) {
+            $request->validate([
+                'name' => 'required|string|max:50',
+                'class' => 'required|string|max:6',
             ]);
 
-        $eleveID = DB::table('t_eleves')->where('ele_nom', $request->name)->value('ele_id');
+            if (null == session('id'))
+                DB::table('t_eleves')->insert([
+                    'ele_nom' => $request->name,
+                    'ele_classe' => $request->class,
+                ]);
 
-        $pieces = session('val');
-        $num = session('num');
+            $eleveID = DB::table('t_eleves')->where('ele_nom', $request->name)->value('ele_id');
 
-        foreach ($pieces['results'] as $piece) {
-            $label = explode(' - ', $piece['label'])[0];
-            $pieceID = DB::table('t_pieces')->where('pie_numero', $label)->value('pie_id');
-            DB::table('t_posseders')->insert([
-                'fk_pie_id' => $pieceID,
-                'fk_ele_id' => $eleveID,
-                'pos_quantite' => $num[$piece['label']]
+            $pieces = session('val');
+            $num = session('num');
+
+            foreach ($pieces['results'] as $piece) {
+                $label = explode(' - ', $piece['label'])[0];
+                $pieceID = DB::table('t_pieces')->where('pie_numero', $label)->value('pie_id');
+                DB::table('t_posseders')->insert([
+                    'fk_pie_id' => $pieceID,
+                    'fk_ele_id' => $eleveID,
+                    'pos_quantite' => $num[$piece['label']]
+                ]);
+            }
+            Swal::toastInfo([
+                'title' => 'Éléments ajoutés à l\'inventaire',
+                'icon' => 'success',
+                'position' => 'bottom-end',
+            ]);
+
+            session()->forget(['val', 'num']);
+        }
+        else{
+            Swal::toastInfo([
+                'title' => 'Aucune pièce dans la liste',
+                'icon' => 'error',
+                'position' => 'bottom-end',
             ]);
         }
-        Swal::toastInfo([
-            'title' => 'Éléments ajoutés à l\'inventaire',
-            'icon' => 'success',
-            'position' => 'bottom-end',
-        ]);
-
-        session()->forget(['val', 'num']);
 
         return redirect()->route('home');
     }
-    
+
     /**
      * getInventory
      *
@@ -94,7 +104,7 @@ class listController extends Controller
 
         return $finalInventory;
     }
-    
+
     /**
      * showInventory
      *
@@ -106,7 +116,7 @@ class listController extends Controller
         $val = $this->getInventory();
         return view('inventaire', ['inventory' => $val, 'id' => '']);
     }
-    
+
     /**
      * verify
      *
@@ -127,7 +137,7 @@ class listController extends Controller
             ->with('bricks', [])
             ->with('id', $id);
     }
-    
+
     /**
      * check
      *
@@ -154,7 +164,7 @@ class listController extends Controller
         session()->forget(['val', 'num']);
         return view('inventaire', ['inventory' => $this->getInventory(), 'scanned' => $piecesScanned, 'id' => $request->id]);
     }
-    
+
     /**
      * delete
      *

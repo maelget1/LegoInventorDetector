@@ -75,7 +75,7 @@ $newId = session('id', $id);
                 @if(is_array($val) && is_array($desc))
                 <h3 class="text-xl font-bold text-[#0A2472] mb-6">{{$name}} - {{$class}}</h3>
                 @foreach($val['results'] as $item)
-                <li class="flex items-center p-4 hover:bg-gray-50 border-b border-[#C7C7CC] transition-colors duration-150 ease-in-out mb-2" id="li-{{$item['label']}}">
+                <li class="flex items-center p-4 hover:bg-gray-50 border-b border-[#C7C7CC] transition-colors duration-150 ease-in-out mb-2 popup" id="li_{{$item['label']}}">
                     <div class="flex items-center justify-center">
                         <span class="text-[#0A2472] text-lg font-bold">{{$item['label']}}</span>
                     </div>
@@ -100,6 +100,9 @@ $newId = session('id', $id);
                             </svg></button>
                     </div>
                 </li>
+                <div id="pop-{{$item['label']}}" class="hidden absolute bg-white p-2 rounded shadow-lg z-50">
+                    <img src="{{ asset('img/' . explode(' - ', $item['label'])[0] . '.jpg') }}" alt="Image" class="w-32 h-32">
+                </div>
                 @endforeach
                 <div id="newContainer">
                 </div>
@@ -166,7 +169,7 @@ $newId = session('id', $id);
                 label: label,
             },
             success: function(response) {
-                document.getElementById('li-' + label).remove();
+                document.getElementById('li_' + label).remove();
             },
             error: function(xhr, status, error) {
                 console.error('Error:', status, error);
@@ -208,6 +211,7 @@ $newId = session('id', $id);
                             </svg></button>
                     </div>
             </li>
+            <div id="pop-" class="hidden absolute bg-white p-2 rounded shadow-lg z-50"><p>hello</p></div>
             `;
         var input = document.getElementById(count);
         input.focus();
@@ -227,7 +231,20 @@ $newId = session('id', $id);
         });
     }
 
+    document.querySelectorAll('.popup').forEach(li => {
+        li.addEventListener('mouseover', function() {
+            let val = this.id.split('_')[1];
+            const pop = document.getElementById('pop-' + val);
+            pop.classList.remove('hidden');
+        });
 
+        li.addEventListener('mouseout', function() {
+            let val = this.id.split('_')[1];
+            const pop = document.getElementById('pop-' + val);
+            pop.classList.add('hidden');
+
+        });
+    });
 
     document.querySelectorAll('.plus-btn').forEach(btn => {
         btn.addEventListener('click', function() {
@@ -248,6 +265,22 @@ $newId = session('id', $id);
         // Get the latest added buttons only
         const latestInput = document.getElementById('add_' + input);
         const latestMinus = document.getElementById('min_' + input);
+        const latestPop = document.getElementById('li_' + input);
+
+        if (latestPop) {
+            latestPop.addEventListener('mouseover', function() {
+                let val = this.id.split('_')[1];
+                const pop = document.getElementById('pop-' + val);
+                pop.classList.remove('hidden');
+            });
+
+            latestPop.addEventListener('mouseout', function() {
+                let val = this.id.split('_')[1];
+                const pop = document.getElementById('pop-' + val);
+                pop.classList.add('hidden');
+            });
+
+        }
 
         if (latestInput) {
             latestInput.addEventListener('click', function() {
@@ -330,7 +363,8 @@ $newId = session('id', $id);
                 document.getElementById('b2-' + id).setAttribute('id', 'min_' + input);
                 document.getElementById('b3-' + id).setAttribute('id', 'add_' + input);
                 document.getElementById('content-' + id).setAttribute('id', 'content-' + input);
-                document.getElementById('li-' + id).setAttribute('id', 'li-' + input);
+                document.getElementById('li-' + id).setAttribute('id', 'li_' + input);
+                document.getElementById('pop-').setAttribute('id', 'pop-' + input);
                 addItem(input);
                 count++;
                 updateButtons(input);
@@ -367,7 +401,6 @@ $newId = session('id', $id);
         const label = document.querySelector('label[for="image"]');
         label.textContent = "Une image a bien été ajoutée";
     }
-
 </script>
 </body>
 
