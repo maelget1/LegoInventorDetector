@@ -6,6 +6,9 @@
 @source '../**/*.js';
 
 @theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-sans: Poppins, sans-serif;
+    --color-primary: #0A2472;
+    --color-button: #0E6BA8;
+    --color-input: #F2F2F7;
+    --color-inptxt: #8E8E93;
 }

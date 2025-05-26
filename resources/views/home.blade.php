@@ -19,29 +19,29 @@ $newId = session('id', $id);
         <div class="mb-4 flex justify-between">
             @if($newId === 0)
             <div class="flex flex-col">
-                <label for="name" class="mb-2 font-medium text-[#0A2472]">Nom de l'élève</label>
-                <input type="input" name="name" id="name" class="w-[350px] h-[50px] bg-[#F2F2F7] rounded-[20px] indent-4">
+                <label for="name" class="mb-2 font-medium text-primary">Nom de l'élève</label>
+                <input type="input" name="name" id="name" class="w-[350px] h-[50px] bg-input rounded-[20px] indent-4">
             </div>
             <div class="flex flex-col">
-                <label for="class" class="mb-2 font-medium text-[#0A2472]">Classe</label>
-                <input type="input" name="class" id="class" class="w-[350px] h-[50px] bg-[#F2F2F7] rounded-[20px] indent-4">
+                <label for="class" class="mb-2 font-medium text-primary">Classe</label>
+                <input type="input" name="class" id="class" class="w-[350px] h-[50px] bg-input rounded-[20px] indent-4">
             </div>
             <input type="hidden" name="id" id="id" value="{{$id}}">
             @else
             <div class="flex flex-col">
-                <label for="name" class="mb-2 font-medium text-[#0A2472]">Nom de l'élève</label>
-                <input type="text" name="name" id="name" value="{{$name}}" class="w-[350px] h-[50px] bg-[#F2F2F7] rounded-[20px] indent-4" readonly>
+                <label for="name" class="mb-2 font-medium text-primary">Nom de l'élève</label>
+                <input type="text" name="name" id="name" value="{{$name}}" class="w-[350px] h-[50px] bg-input rounded-[20px] indent-4" readonly>
             </div>
             <div class="flex flex-col">
-                <label for="class" class="mb-2 font-medium text-[#0A2472]">Classe</label>
-                <input type="text" name="class" id="class" value="{{$class}}" class="w-[350px] h-[50px] bg-[#F2F2F7] rounded-[20px] indent-4" readonly>
+                <label for="class" class="mb-2 font-medium text-primary">Classe</label>
+                <input type="text" name="class" id="class" value="{{$class}}" class="w-[350px] h-[50px] bg-input rounded-[20px] indent-4" readonly>
             </div>
             <input type="hidden" name="id" id="id" value="{{$id}}">
             @endif
         </div>
         <div class="mb-4">
             <div class="flex flex-col">
-                <label for="image" class="flex justify-center items-center w-[750px] h-[130px] bg-[#F2F2F7] text-[#8E8E93] rounded-[20px] border-2 border-dashed border-[#0E6BA8]">
+                <label for="image" class="flex justify-center items-center w-[750px] h-[130px] bg-input text-inptxt rounded-[20px] border-2 border-dashed border-button">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-image-icon lucide-image p-1">
                         <rect width="18" height="18" x="3" y="3" rx="2" ry="2" />
                         <circle cx="9" cy="9" r="2" />
@@ -54,11 +54,11 @@ $newId = session('id', $id);
         </div>
         <div class="w-full flex justify-center h-[40px]">
             @if($newId === 0)
-            <button type="submit" class="rounded-[10px] font-semibold bg-[#0E6BA8] text-white w-[200px]">
+            <button type="submit" class="rounded-[10px] font-semibold bg-button text-white w-[200px]">
                 Valider
             </button>
             @else
-            <button type="submit" class="rounded-[10px] font-semibold bg-[#0E6BA8] text-white w-[200px]">
+            <button type="submit" class="rounded-[10px] font-semibold bg-button text-white w-[200px]">
                 Valider le retour
             </button>
             @endif
@@ -67,54 +67,54 @@ $newId = session('id', $id);
 </div>
 
 <!-- Résultats -->
-<div class="w-[800px] mb-3 overflow-hidden transform transition-transform duration-500 hover:-translate-y-2 shadow-xl">
+<div class="w-[800px] mb-3 transform transition-transform duration-500 hover:-translate-y-2 shadow-xl">
     <div class="w-full h-full mx-auto p-6 bg-white rounded-[20px] shadow-md">
         <ul class="divide-y divide-gray-200">
 
             <div class="flex flex-col">
                 @if(is_array($val) && is_array($desc))
-                <h3 class="text-xl font-bold text-[#0A2472] mb-6">{{$name}} - {{$class}}</h3>
+                <h3 class="text-xl font-bold text-primary mb-6">{{$name}} - {{$class}}</h3>
                 @foreach($val['results'] as $item)
                 <li class="flex items-center p-4 hover:bg-gray-50 border-b border-[#C7C7CC] transition-colors duration-150 ease-in-out mb-2 popup" id="li_{{$item['label']}}">
                     <div class="flex items-center justify-center">
-                        <span class="text-[#0A2472] text-lg font-bold">{{$item['label']}}</span>
+                        <span class="text-primary text-lg font-bold">{{$item['label']}}</span>
                     </div>
                     <div class="ml-4 flex-grow">
-                        <p class="font-medium text-[#0A2472]">{{$desc[$item['label']]}}</p>
+                        <p class="font-medium text-primary">{{$desc[$item['label']]}}</p>
                     </div>
                     <div class="flex items-center gap-x-4">
-                        <button class="text-[#0A2472] bin_btn" id="bin_{{$item['label']}}" onclick="remove(this.id)"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trash2-icon lucide-trash-2">
+                        <button class="text-primary bin_btn" id="bin_{{$item['label']}}" onclick="remove(this.id)"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trash2-icon lucide-trash-2">
                                 <path d="M3 6h18" />
                                 <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
                                 <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
                                 <line x1="10" x2="10" y1="11" y2="17" />
                                 <line x1="14" x2="14" y1="11" y2="17" />
                             </svg></button>
-                        <button class="text-[#0A2472] minus-btn hidden" id="min_{{$item['label']}}"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-minus-icon lucide-minus">
+                        <button class="text-primary minus-btn hidden" id="min_{{$item['label']}}"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-minus-icon lucide-minus">
                                 <path d="M5 12h14" />
                             </svg></button>
-                        <p class="text-[#0A2472] font-bold" id="content-{{$item['label']}}">{{$num[$item['label']]}}</p>
-                        <button class="text-[#0A2472] plus-btn" id="add_{{$item['label']}}"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-plus-icon lucide-plus">
+                        <p class="text-primary font-bold" id="content-{{$item['label']}}">{{$num[$item['label']]}}</p>
+                        <button class="text-primary plus-btn" id="add_{{$item['label']}}"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-plus-icon lucide-plus">
                                 <path d="M5 12h14" />
                                 <path d="M12 5v14" />
                             </svg></button>
                     </div>
                 </li>
-                <div id="pop-{{$item['label']}}" class="hidden absolute bg-white p-2 rounded shadow-lg z-50">
+                <div id="pop-{{$item['label']}}" class="hidden z-40 absolute bg-white p-2 rounded shadow-lg">
                     <img src="{{ asset('img/' . explode(' - ', $item['label'])[0] . '.jpg') }}" alt="Image" class="w-32 h-32">
                 </div>
                 @endforeach
                 <div id="newContainer">
                 </div>
-                <button type="button" class="text-white bg-[#0E6BA8] font-medium rounded-full text-sm p-2.5 text-center ml-auto" id="addButton">
+                <button type="button" class="text-white bg-button font-medium rounded-full text-sm p-2.5 text-center ml-auto" id="addButton">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-plus-icon lucide-plus">
                         <path d="M5 12h14" />
                         <path d="M12 5v14" />
                     </svg>
                 </button>
                 @else
-                <h3 class="flex justify-center text-xl font-bold text-[#8E8E93] mb-6">Aucune pièce scannée</h3>
-                <label class=" flex justify-center text-[#8E8E93]">
+                <h3 class="flex justify-center text-xl font-bold text-inptxt mb-6">Aucune pièce scannée</h3>
+                <label class=" flex justify-center text-inptxt">
                     <svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-frown-icon lucide-frown">
                         <circle cx="12" cy="12" r="10" />
                         <path d="M16 16s-1.5-2-4-2-4 2-4 2" />
@@ -133,7 +133,7 @@ $newId = session('id', $id);
 <form method="POST" action="{{route('check')}}" accept-charset="UTF-8">
     @csrf
     <input type="hidden" name="id" value="{{$id}}">
-    <button class="flex justify-center items-center rounded-[10px] w-[200px] h-[40px] text-white font-semibold bg-[#0E6BA8]">
+    <button class="flex justify-center items-center rounded-[10px] w-[200px] h-[40px] text-white font-semibold bg-button">
         Vérifier
     </button>
 </form>
@@ -142,14 +142,14 @@ $newId = session('id', $id);
     @csrf
     <input type="hidden" name="name" value="{{$name}}">
     <input type="hidden" name="class" value="{{$class}}">
-    <button class="flex justify-center items-center rounded-[10px] w-[200px] h-[40px] text-white font-semibold bg-[#0E6BA8]">
+    <button class="flex justify-center items-center rounded-[10px] w-[200px] h-[40px] text-white font-semibold bg-button">
         Inventorier
     </button>
 </form>
 @endif
 @endif
 <div class="mt-[30px]">
-    <p class="text-[#0A2472]">Maël Gétain - TPI</p>
+    <p class="text-primary">Maël Gétain - TPI</p>
 </div>
 <script>
     var count = 0;
@@ -181,7 +181,7 @@ $newId = session('id', $id);
     document.getElementById('addButton').addEventListener('click', function() {
         const newContainer = document.getElementById('newContainer');
         newContainer.innerHTML += `
-            <li class="flex items-center p-4 hover:bg-gray-50 border-b border-[#C7C7CC] transition-colors duration-150 ease-in-out mb-2" id="li-` + count + `">
+            <li class="flex items-center p-4 hover:bg-gray-50 border-b border-[#C7C7CC] transition-colors duration-150 ease-in-out mb-2 popup" id="li-` + count + `">
                 <div class="flex items-center justify-center" id="div-` + count + `">
                     <input type="text" id="` + count + `" onchange="searchDescription(this.id)" list="o-` + count + `"/>
                     <datalist id="o-` + count + `">
@@ -191,27 +191,27 @@ $newId = session('id', $id);
                     </datalist>
                 </div>
                 <div class="ml-4 flex-grow">
-                    <p class="font-medium text-[#0A2472]" id="` + count + `-desc">description</p>
+                    <p class="font-medium text-primary" id="` + count + `-desc">description</p>
                 </div>
                 <div class="flex items-center gap-x-4 hidden" id="p-` + count + `">
-                        <button class="text-[#0A2472] bin_btn" id="b1-` + count + `" onclick="remove(this.id)"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trash2-icon lucide-trash-2">
+                        <button class="text-primary bin_btn" id="b1-` + count + `" onclick="remove(this.id)"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trash2-icon lucide-trash-2">
                                 <path d="M3 6h18" />
                                 <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
                                 <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
                                 <line x1="10" x2="10" y1="11" y2="17" />
                                 <line x1="14" x2="14" y1="11" y2="17" />
                             </svg></button>
-                        <button class="text-[#0A2472] minus-btn hidden" id="b2-` + count + `"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-minus-icon lucide-minus">
+                        <button class="text-primary minus-btn hidden" id="b2-` + count + `"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-minus-icon lucide-minus">
                                 <path d="M5 12h14" />
                             </svg></button>
-                        <p class="text-[#0A2472] font-bold" id="content-` + count + `">1</p>
-                        <button class="text-[#0A2472] plus-btn" id="b3-` + count + `"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-plus-icon lucide-plus">
+                        <p class="text-primary font-bold" id="content-` + count + `">1</p>
+                        <button class="text-primary plus-btn" id="b3-` + count + `"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-plus-icon lucide-plus">
                                 <path d="M5 12h14" />
                                 <path d="M12 5v14" />
                             </svg></button>
                     </div>
             </li>
-            <div id="pop-" class="hidden absolute bg-white p-2 rounded shadow-lg z-50"><p>hello</p></div>
+            <div id="pop-" class="hidden absolute bg-white p-2 rounded shadow-lg z-50"></div>
             `;
         var input = document.getElementById(count);
         input.focus();
@@ -271,6 +271,14 @@ $newId = session('id', $id);
             latestPop.addEventListener('mouseover', function() {
                 let val = this.id.split('_')[1];
                 const pop = document.getElementById('pop-' + val);
+                // Pour avoir la position de l'élément
+                const rect = this.getBoundingClientRect();
+
+                // Mettre la position à côté de l'élément
+                pop.style.position = 'fixed';
+                pop.style.top = `10px`;
+                pop.style.left = `10px`;
+
                 pop.classList.remove('hidden');
             });
 
@@ -356,7 +364,7 @@ $newId = session('id', $id);
                 const description = document.getElementById(id + '-desc');
                 description.textContent = response.description;
                 document.getElementById('div-' + id).innerHTML = `
-                <span class="text-[#0A2472] text-lg font-bold">` + input + `</span>
+                <span class="text-primary text-lg font-bold">` + input + `</span>
                 `;
                 document.getElementById('p-' + id).classList.remove('hidden');
                 document.getElementById('b1-' + id).setAttribute('id', 'bin_' + input);
@@ -365,6 +373,9 @@ $newId = session('id', $id);
                 document.getElementById('content-' + id).setAttribute('id', 'content-' + input);
                 document.getElementById('li-' + id).setAttribute('id', 'li_' + input);
                 document.getElementById('pop-').setAttribute('id', 'pop-' + input);
+                document.getElementById('pop-' + input).innerHTML = `
+                <img src="{{asset('img')}}/` + input.split(' - ')[0] + `.jpg" alt="Image" class="w-32 h-32">
+                `;
                 addItem(input);
                 count++;
                 updateButtons(input);
